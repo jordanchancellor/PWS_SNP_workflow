@@ -4,7 +4,7 @@ on:
 
   push:
     branches:
-      - master
+      - main
       
   schedule:
   - cron: "0 0 * * *" # See https://crontab.guru/every-day-at-midnight
@@ -30,7 +30,11 @@ jobs:
           git config --local user.email "jordan.chancellor.15@gmail.com"
           git config --local user.name "jordanchancellor"
           git add -A
-          git commit -m "🪩 auto commit"
+          if ! git diff --staged --quiet; then
+            git commit -m "🪩 auto commit"
+          else
+            echo "No changes to commit"
+          fi
           
       - name: GitHub Push
         uses: ad-m/github-push-action@v0.6.0
