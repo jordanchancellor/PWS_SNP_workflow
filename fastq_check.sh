@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # a conda-dependent bash script to run fastq_utils paired fastq files 
-# usage: bash scripts/fastq_check.sh
+# usage: bash PWS_SNP_workflow/fastq_check.sh
 # assumes you have conda already installed and environments created for running fastqc and multiqc
 
 # define resources and log files

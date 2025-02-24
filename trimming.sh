@@ -1,13 +1,13 @@
 #!/bin/bash
 
 # a conda-dependent bash script to run trimmoimatic on paired fastq files 
-# usage: bash scripts/trimming.sh
+# usage: bash PWS_SNP_workflow/trimming.sh
 # assumes you have conda already installed and environments created
 
 # define resources and batch sizes (us batch size of 1 to run one file at a time in loop)
-THREADS="2"
+THREADS="44"
 your_email="jordan.chancellor.15@gmail.com"
-batch_size=24 
+batch_size=1 
 count=0
 jobs=()
 
@@ -40,13 +40,13 @@ then
 fi
 
 # trimmomatic checkpoint
-trimmomatic --version 2>> "$log_err" | tee -a "$log_out"
+trimmomatic -version 2>> "$log_err" | tee -a "$log_out"
 if [[ $? -ne 0 ]]; then
     echo "Error: trimmomatic not installed correctly." | tee -a "$log_err"
     exit 1
 fi
 
-# run trimmomatic on paired reads in loop one-by-one 
+# run trimmomatic on paired reads in batches  
 while read -r sample_id; do
     read1="${readsdir}/${sample_id}_1.fastq.gz"
     read2="${readsdir}/${sample_id}_2.fastq.gz"
@@ -63,15 +63,15 @@ while read -r sample_id; do
     # Run trimmomatic on paired-end reads
     echo "Running trimmomatic on files associated with ${sample_id}: ${read1} and ${read2}" | tee -a "$log_out"
 
-    trimmomatic PE -threads "$THREADS" -"${phred}" \
-    "${read1}" "${read2}" \
-    ${outdir}/"${sample_id}"_F_trimmed_paired.fq.gz ${outdir}/"${sample_id}"_F_trimmed_unpaired.fq.gz \
-    ${outdir}/"${sample_id}"_R_trimmed_paired.fq.gz ${outdir}/"${sample_id}"_R_trimmed_unpaired.fq.gz \
-    ILLUMINACLIP:"${ADAPTERS}" \
-    LEADING:"${LEADING}" \
-    TRAILING:"${TRAILING}" \
-    SLIDINGWINDOW:"${SLIDINGWINDOW}" \
-    MINLEN:"${MINLEN}" > "$job_out" 2> "$job_err" &
+    trimmomatic PE -threads "$THREADS" "-${phred}" \
+        "${read1}" "${read2}" \
+        "${outdir}/${sample_id}_F_trimmed_paired.fq.gz" "${outdir}/${sample_id}_F_trimmed_unpaired.fq.gz" \
+        "${outdir}/${sample_id}_R_trimmed_paired.fq.gz" "${outdir}/${sample_id}_R_trimmed_unpaired.fq.gz" \
+        ILLUMINACLIP:"${ADAPTERS}" \
+        LEADING:"${LEADING}" \
+        TRAILING:"${TRAILING}" \
+        SLIDINGWINDOW:"${SLIDINGWINDOW}" \
+        MINLEN:"${MINLEN}" > "$job_out" 2> "$job_err" &
 
     jobs+=($!)
 
