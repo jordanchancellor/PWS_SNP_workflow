@@ -18,6 +18,9 @@ jobs:
         with:
          persist-credentials: false
          fetch-depth: 0
+         
+      - name: Pull latest changes
+        run: git pull origin main || echo "No changes to pull"
 
       - name: Modify last update
         run: |
