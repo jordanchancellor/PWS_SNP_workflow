@@ -20,7 +20,7 @@ jobs:
          fetch-depth: 0
          
       - name: Pull latest changes
-        run: git pull origin main || echo "No changes to pull"
+        run: git pull --rebase origin main || echo "No changes to pull"
 
       - name: Modify last update
         run: |
