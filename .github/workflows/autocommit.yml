@@ -1,6 +1,7 @@
 name: Auto commit
 
 on:
+
   push:
     branches:
       - main
@@ -18,16 +19,6 @@ jobs:
         with:
          persist-credentials: false
          fetch-depth: 0
-         
-      - name: Pull latest changes
-        run: |
-          git config --global user.email "jordan.chancellor.15@gmail.com"
-          git config --global user.name "jordanchancellor"
-
-          git stash
-          git fetch origin main
-          git pull --rebase origin main || echo "No changes to pull"
-          git stash pop || echo "No changes to apply"
 
       - name: Modify last update
         run: |
@@ -39,11 +30,8 @@ jobs:
           git config --local user.email "jordan.chancellor.15@gmail.com"
           git config --local user.name "jordanchancellor"
           git add -A
-          if ! git diff --staged --quiet; then
-            git commit -m "🪩 auto commit"
-          else
-            echo "No changes to commit"
-          fi
+          
+          git commit -m "🪩 auto commit"
           
       - name: GitHub Push
         uses: ad-m/github-push-action@v0.6.0
