@@ -3,16 +3,16 @@
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=12
 #SBATCH --mem=50G
-#SBATCH --time=01:00:00
+#SBATCH --time=05:00:00
 #SBATCH --constraint=cal
-#SBATCH --error=trimmomatic_%A-%a.err
-#SBATCH --output=trimmomatic_%A-%a.out
+#SBATCH --error=%x_%a.err
+#SBATCH --output=%x_%a.out
 #SBATCH --mail-type=END
 #SBATCH --mail-user=jordan.chancellor.15@gmail.com
 #SBATCH --array=1-45
 
 # a module-dependent bash script array to run trimmoimatic on paired fastq files from input samples_file.txt sample list
-# usage: bash PWS_SNP_workflow/trimming.sbatch
+# usage: sbatch PWS_SNP_workflow/trimming.sbatch
 # set --array vairable to number of samples you wish to process
 
 # set global variables
