@@ -20,7 +20,14 @@ jobs:
          fetch-depth: 0
          
       - name: Pull latest changes
-        run: git pull --rebase origin main || echo "No changes to pull"
+        run: |
+          git config --global user.email "jordan.chancellor.15@gmail.com"
+          git config --global user.name "jordanchancellor"
+
+          git stash
+          git fetch origin main
+          git pull --rebase origin main || echo "No changes to pull"
+          git stash pop || echo "No changes to apply"
 
       - name: Modify last update
         run: |
