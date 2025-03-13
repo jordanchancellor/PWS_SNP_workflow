@@ -58,46 +58,29 @@ if [[ $? -ne 0 ]]; then
     echo "Error: FASTQC failed for ${sample_id}"
     exit 1
 else
-    # log the existence of the FASTQC output files for this sample and track file existence
-    expected_files=(
-        "${outdir}/${sample_id}_fastqc.html"
-        "${outdir}/${sample_id}_fastqc.zip"
-    )
-    for file in "${expected_files[@]}"; do
-        if [[ -f "$file" ]]; then
-            echo "${sample_id} $file exists" >> "$log_fastq_file_tracking"
-        else
-            echo "${sample_id} $file missing" >> "$log_fastq_file_tracking"
-        fi
-    done
+    echo "fastqc complete for sample ${sample_id}"
 fi
 
-# run multiqc if final array job
-if [[ "$SLURM_ARRAY_TASK_ID" -eq "$SLURM_ARRAY_TASK_COUNT" ]]; then
-    echo "Final job: Checking if all FASTQC files exist before running MultiQC..."
-
-    # Check if all expected files are present
-    missing_files=$(grep "missing" "$log_fastq_file_tracking" | wc -l)
-
-    if [[ "$missing_files" -eq 0 ]]; then
-        # multiqc checkpoint
-        multiqc --version
-        if [[ $? -ne 0 ]]; then
-            echo "Error: MultiQC not installed correctly."
-            exit 1
-        fi
-
-        # check that outdir exists
-        if [[ -d "$outdir" ]]; then
-            echo "Running MultiQC on ${outdir}"
-            multiqc -o "$outdir" "$outdir"
-            echo "MultiQC completed. Results can be found in ${outdir}."
-        else
-            echo "Error: Output directory ${outdir} not found. MultiQC failed."
-            exit 1
-        fi
-    else
-        echo "Some expected FASTQC output files are missing. MultiQC will not run."
+# run multiqc if all fastqc reports are present
+if [[ $(find "$outdir" -name "*_fastqc.html" | wc -l) -eq "$SLURM_ARRAY_TASK_COUNT" ]]; then
+    echo "All fastqc files are present. Running MultiQC..."
+    # MultiQC checkpoint
+    multiqc --version
+    if [[ $? -ne 0 ]]; then
+        echo "Error: MultiQC not installed correctly."
         exit 1
     fi
+
+    # Check if output directory exists
+    if [[ -d "$outdir" ]]; then
+        echo "Running MultiQC on ${outdir}"
+        multiqc -o "$outdir" "$outdir"
+        echo "MultiQC completed. Results can be found in ${outdir}."
+    else
+        echo "Error: Output directory ${outdir} not found. MultiQC failed."
+        exit 1
+    fi
+else
+    echo "Some expected FASTQC output files are missing. MultiQC will not run."
+    exit 1
 fi
