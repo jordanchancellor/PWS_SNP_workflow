@@ -12,7 +12,7 @@ import subprocess
 # if run with option --overlap, will output intersections of coding and non-coding regions with input masked genome .bed file
 # note: you must load python version  > 3.7 in order for script to execute properly
 # note: you must also have bedtools installed in path for script to execute properly
-# Usage: python3 script.py <gff file> [--overlap <masked bed file>]
+# Usage: python3 genome_masking_annotations.py <gff file> [--overlap <masked bed file>]
 
 def parse_gff(gff_file):
     """Parses the GFF file and returns a DataFrame with genomic features."""
