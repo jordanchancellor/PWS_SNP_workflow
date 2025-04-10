@@ -47,9 +47,9 @@ calculate_ld <- function(input_prefix, output_dir, chromosome) {
     "--mind 0.02",
     "--hwe 1e-6",
     "--r2",
-    "--ld-window-kb 1000",
-    "--ld-window 1000",
-    "--ld-window-r2 0.1",
+    "--ld-window-kb 100",
+    "--ld-window 99999",
+    "--ld-window-r2 0",
     "--out", plink_out
   )
   system(plink_cmd)
@@ -72,11 +72,17 @@ calculate_ld <- function(input_prefix, output_dir, chromosome) {
   # Calculate distance (kb)
   ld_data[, Distance_kb := abs(BP_B - BP_A) / 1000]
 
+  # Subsample large LD datasets
+  if (nrow(ld_data) > 100000) {
+    set.seed(123)
+    ld_data <- ld_data[sample(.N, 10000)]
+  }
+
   # Plot LD decay
   plot_file <- paste0(plink_out, "_ld_decay.png")
   p <- ggplot(ld_data, aes(x = Distance_kb, y = R2)) +
-    geom_point(alpha = 0.5, color = "blue") +
-    geom_smooth(method="loess", formula="y ~ x") +
+    geom_point(alpha = 0.5, color = "gray") +
+    geom_smooth(method="loess", formula="y ~ x", color = "blue", linewidth = 0.5) +
     labs(title = paste("LD Decay - Chromosome", chromosome),
          x = "Distance (kb)",
          y = expression(r^2)) +
