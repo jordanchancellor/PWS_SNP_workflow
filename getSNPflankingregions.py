@@ -11,7 +11,7 @@ from Bio import SeqIO
 
 # This script will generate a file of flanking sequences from a genome fasta file using an invput VCF file
 # note: you must load python version  > 3.7 in order for script to execute properly
-# Usage: python3 getSNPgenomeannotations.py <input_vcf> <input_fasta> <flankingregionupstreamlength> <flankingregiondownstreamlength> OR only supply one length that will be used for both up and downstream
+# Usage: python3 getSNPflankingregions.py <input_vcf> <input_fasta> <flankingregionupstreamlength> <flankingregiondownstreamlength> OR only supply one length that will be used for both up and downstream
 
 # define functions
 
