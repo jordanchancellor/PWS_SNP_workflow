@@ -9,7 +9,7 @@ from Bio.SeqRecord import SeqRecord
 from Bio import SeqIO
 
 
-# This script will generate a file of flanking sequences from a genome fasta file using an invput VCF file
+# This script will extract snp effect annotations (i.e. snpeff) from input annotated vcf file and output a tab-delimited table
 # note: you must load python version  > 3.7 in order for script to execute properly
 # Usage: python3 getSNPeffectannotations.py <input_vcf>
 
