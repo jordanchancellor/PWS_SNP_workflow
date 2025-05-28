@@ -175,4 +175,4 @@ snpEff build -gtf22 -v pvannamei
 # run snpeff
 snpEff pvannamei <vcf_file> > <annotated_vcf_filename>
 ```
-### Other scripts included in this repository and not included in the described workflow are used for other SNP analyses. If you have questions about these workflows you can contact me directly 
+### Other scripts included in this repository and not included in the described workflow are used for other SNP analyses. If you have questions about these you can contact me directly.
