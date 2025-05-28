@@ -20,6 +20,8 @@ wget https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/042/767/895/GCF_042767895.1_AS
 ```
 7. Align to downloaded reference genome:
    ```
+   sbatch buildindex.sbatch <aligner>
+   
    sbatch alignment.sbatch <aligner>
         Aligner options: bwa, bowtie
    ```
@@ -134,8 +136,42 @@ bcftools view -T ^noncoding_masked_regions.bed <vcf_file> -O z -o <new_vcf_file>
 ```
 python3 filtervcf_heterozygosity.py <vcf_file> <heterozygosity_threshold>
 ```
-31.  Filter SNPs based on density across genome
-- 
-32.  
+31.  Filter SNPs based on density across genome: `python3 snp_proximity_filtering.py <vcf_file>`
 
+## **SNP Effect Annotation**
 
+32. Extract annotations of SNPs from reference genome: `python3 getSNPgenomeannotations.py <vcf_file> <reference_genome_gff_file>`
+33. Extract flanking sequences of snps: `python3 getSNPflankingregions.py <input_vcf> <referece_genome_fasta_file> <flankingregionupstreamlength> [flankingregiondownstreamlength]`
+34. Annotate SNP effects with SNPeff
+```
+# load SNPeff HPC module
+module load snpeff/5e
+# copy the snpeff module installation to your new directory so you can edit config files
+mkdir snpEff
+cd snpEff
+scp snpeff/5e ./
+
+# copy .gtf and .fna genome files to data directory
+mkdir data
+mkdir pvannamei
+cd pvannamei
+scp <reference_genome_fasta_file> <reference_genome_gtf_file>
+gunzip <reference_genome_gtf_file>
+
+# rename files 
+mv <reference_genome_fasta_file> sequences.fa
+mv <reference_genome_gtf_file> genes.gtf
+
+# add genome to config file
+nano snpEff.config
+# add this lines plus any other comments you would like to include
+# comment out old genomes just to be safe
+pvannamei.genome : pvannamei
+
+# create the database 
+cd /path/to/snpEff
+snpEff build -gtf22 -v pvannamei
+
+# run snpeff
+snpEff pvannamei <vcf_file> > <annotated_vcf_filename>
+```
