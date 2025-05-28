@@ -64,7 +64,7 @@ wget https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/042/767/895/GCF_042767895.1_AS
     ```
 22. Check quality measurements on unfiltered SNPs:
 ```
-bcftools query snps.vcf.gz -f '%FS\t%SOR\t%MQRankSum\t%ReadPosRankSum\t%QD\t%MQ\t%DP\n' > initial_snps_qualmeasurements.txt
+bcftools query <vcf_file> -f '%FS\t%SOR\t%MQRankSum\t%ReadPosRankSum\t%QD\t%MQ\t%DP\n' > initial_snps_qualmeasurements.txt
 ```
 23. plot results to view distribution and choose variant filtering thresholds
 24. Hard filter variants using either GATK or bcftools based on quality scores above:
@@ -79,6 +79,63 @@ sbatch filter_biallelicMAF.sbatch <vcf_file> <MAF>
      # MAF is numeric i.e. 0.1, 0.05
 ```
 27. Filter for SNPs only within chromosomes and exclude SNPs within 75bp of beginning/end of chromosomes
+- Create BED file from genome fasta:
 ```
+python3 bedfromfasta.py <reference_fasta> <genome_BED_file>
 ```
-28. 
+- Create BED file of only chromosomes:
+```
+python3 bedfromfasta.py <reference_fasta> <chromosome_BED_file>
+```
+- Edit chromosomal BED file to add/subtract 75bp from either end of chromosome:
+``` bash
+if ($3 - $2 > 150) { 
+    start = $2 + 75;    
+    end = $3 - 75;      
+    print $1"\t"start"\t"end; 
+  }
+}' <chromosome_BED_file> > <new_chromosome_BED_file>
+```
+- Index vcf file:
+```
+bcftools index <vcf_file>
+```
+- Filter SNPs using bcftools:
+```
+bcftools view -R ^<new_chromosome_BED_file> -O z -o <new_vcf_file>
+```
+28. Filter SNPs inside of masked (repetitive) regions
+- Mask reference genome using bbmask from BBTools Suite: `sbatch genomemasking.sbatch <reference genome>`
+- Create BED file of masked regions (x3: all regions, coding regions, noncoding regions):
+```
+python3 generate_masked_ranges.py <fasta file | .fa or .fa.gz> > masked_ranges.bed
+```
+- Index vcf file:
+```
+bcftools index <vcf_file>
+```
+- Filter SNPs using bcftools
+```
+bcftools view -T ^masked_ranges.bed <vcf_file> -O z -o <new_vcf_filename>
+```
+29. Filter SNPs only in masked, coding regions
+- Edit noncoding overlap regions to create bed file of only masked regions which are located in noncoding regions
+```
+awk -F '\t' '{print $1 "\t" $2 "\t" $3}' masked_in_noncoding_overlap.bed > noncoding_masked_regions.bed
+```
+- Filter SNPs using bcftools
+```
+bcftools view -T ^noncoding_masked_regions.bed <vcf_file> -O z -o <new_vcf_file>
+```
+30. Filter SNPs based on observed heterozygosity
+- Calculate heterozygosity per-site: `python3 computeheterozygosity.py <vcf_file>`
+- Plot to choose appropriate threshold
+- Filter VCF to include only SNPs with heterozygosity greater than specified threshold
+```
+python3 filtervcf_heterozygosity.py <vcf_file> <heterozygosity_threshold>
+```
+31.  Filter SNPs based on density across genome
+- 
+32.  
+
+
