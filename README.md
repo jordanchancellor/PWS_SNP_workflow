@@ -15,8 +15,7 @@ Here is a step-by-step workflow describing how to call SNPs from raw fastqc WGS 
    - Download reference sequences from NCBI (Genome assembly ASM4276789v1 at the time of analysis):
    - ```wget https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/042/767/895/GCF_042767895.1_ASM4276789v1/GCF_042767895.1_ASM4276789v1_genomic.fna.gz
      wget https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/042/767/895/GCF_042767895.1_ASM4276789v1/GCF_042767895.1_ASM4276789v1_genomic.gtf.gz
-     wget https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/042/767/895/GCF_042767895.1_ASM4276789v1/GCF_042767895.1_ASM4276789v1_genomic.gff.gz
-```
+     wget https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/042/767/895/GCF_042767895.1_ASM4276789v1/GCF_042767895.1_ASM4276789v1_genomic.gff.gz```
    - Align to downloaded reference genome: `sbatch alignment.sbatch`
    - Get mapping statistics from output files: `sbatch mappingstats.sbatch`
 
